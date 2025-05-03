@@ -47,3 +47,4 @@ app.*.map.json
 # continue
 .continue/
 SYSTEM_DESIGN_TIMELINE.md
+CORE_CONCEPTS.md
