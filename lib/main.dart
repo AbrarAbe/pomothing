@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:pomothing/home/home.dart';
-import 'package:pomothing/theme/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+import 'screens/timer_screen.dart';
+import 'theme/theme_provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadTheme();
+
   runApp(
     ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
-      child: const MainApp(),
+      create: (context) => themeProvider,
+      child: const PomothingApp(),
     ),
   );
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class PomothingApp extends StatelessWidget {
+  const PomothingApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: Provider.of<ThemeProvider>(context).themeData,
-      home: HomeScreen(),
+      home: TimerScreen(),
     );
   }
 }
