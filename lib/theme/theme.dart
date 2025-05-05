@@ -35,6 +35,7 @@ ThemeData lightMode = ThemeData(
     onTertiary: catppuccinLatteHighlight,
     primaryContainer: catppuccinLatteAccent,
     error: catppuccinLatteError,
+    onPrimary: catppuccinLatteSurface,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: catppuccinLatteSurface,
@@ -61,6 +62,7 @@ ThemeData darkMode = ThemeData(
     onTertiary: catppuccinMochaHighlight,
     primaryContainer: catppuccinMochaAccent,
     error: catppuccinMochaError,
+    onPrimary: catppuccinLatteSubtext1,
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: catppuccinMochaSurface,

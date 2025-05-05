@@ -70,23 +70,28 @@ class _TimerScreenState extends State<TimerScreen> {
               isReverse: true,
               isReverseAnimation: true,
               neumorphicEffect: true,
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              outerStrokeColor: Theme.of(context).colorScheme.error,
+              textStyle: TextStyle(
+                fontSize: 50,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              outerStrokeColor: Theme.of(context).colorScheme.onPrimary,
               innerFillGradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.tertiary,
                   Theme.of(context).colorScheme.primaryContainer,
+                  Theme.of(context).colorScheme.onTertiary,
+                  Theme.of(context).colorScheme.tertiary,
                 ],
               ),
               neonGradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.tertiary,
+                  Theme.of(context).colorScheme.secondary,
                   Theme.of(context).colorScheme.primaryContainer,
                 ],
               ),
             ),
             Row(
-              spacing: 30,
+              spacing: 25,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 MaterialButton(
@@ -97,7 +102,11 @@ class _TimerScreenState extends State<TimerScreen> {
                   ),
                   color: Theme.of(context).colorScheme.primaryContainer,
                   onPressed: () {},
-                  child: Icon(Icons.stop, size: 25),
+                  child: Icon(
+                    Icons.stop,
+                    size: 25,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
                 MaterialButton(
                   height: 50,
@@ -107,7 +116,11 @@ class _TimerScreenState extends State<TimerScreen> {
                   ),
                   color: Theme.of(context).colorScheme.primary,
                   onPressed: () {},
-                  child: Icon(Icons.play_arrow, size: 30),
+                  child: Icon(
+                    Icons.play_arrow,
+                    size: 30,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ],
             ),
