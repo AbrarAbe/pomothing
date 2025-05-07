@@ -35,7 +35,7 @@ class TimerProvider extends ChangeNotifier {
         _timeRemaining--;
         notifyListeners();
       } else {
-        _endSession();
+        endSession();
       }
     });
   }
@@ -48,6 +48,11 @@ class TimerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resumeTimer() {
+    if (_timerState != TimerState.paused) return;
+    startTimer();
+  }
+
   void resetTimer() {
     _timer.cancel();
     _timerState = TimerState.initial;
@@ -57,7 +62,7 @@ class TimerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _endSession() {
+  void endSession() {
     _timer.cancel();
 
     if (_currentSessionType == SessionType.work) {
