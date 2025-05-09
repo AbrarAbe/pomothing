@@ -23,6 +23,7 @@ class TimerProvider extends ChangeNotifier {
   TimerState get timerState => _timerState;
   SessionType get currentSessionType => _currentSessionType;
   int get currentCycle => _currentCycle;
+  int get remainingTime => _timeRemaining;
 
   void startTimer() {
     // Checks if the timer is already running to avoid creating multiple timers.
@@ -54,11 +55,39 @@ class TimerProvider extends ChangeNotifier {
   }
 
   void resetTimer() {
-    _timer.cancel();
+    if (_timerState == TimerState.running) {
+      _timer.cancel();
+    }
     _timerState = TimerState.initial;
     _timeRemaining = _getDurationForSessionType(_currentSessionType);
+    notifyListeners();
+  }
+
+  void resetCycle() {
     _currentCycle = 0;
     _currentSessionType = SessionType.work;
+    resetTimer();
+    notifyListeners();
+  }
+
+  void skipSession() {
+    _timer.cancel();
+
+    if (_currentSessionType == SessionType.work) {
+      _currentCycle++;
+      if (_currentCycle % _cyclesBeforeLongBreak == 0) {
+        _currentSessionType = SessionType.longBreak;
+        _timeRemaining = _longBreakDuration;
+      } else {
+        _currentSessionType = SessionType.shortBreak;
+        _timeRemaining = _shortBreakDuration;
+      }
+    } else {
+      _currentSessionType = SessionType.work;
+      _timeRemaining = _workDuration;
+    }
+
+    _timerState = TimerState.initial;
     notifyListeners();
   }
 

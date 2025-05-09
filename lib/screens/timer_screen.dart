@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:neon_circular_timer/neon_circular_timer.dart';
-
 import '../providers/timer_provider.dart';
 import '../models/timer_state.dart';
 import '../models/session_type.dart';
-// import 'package:pomothing/utils/timer_utils.dart';
 import '../theme/theme_provider.dart';
 
 class TimerScreen extends StatefulWidget {
@@ -16,44 +13,55 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen> {
-  final CompleteCreation _controller = CompleteCreation();
   @override
   void initState() {
     super.initState();
   }
 
-  int _getCurrentSessionDuration(TimerProvider timerProvider) {
-    if (timerProvider.currentSessionType == SessionType.work) {
-      return 25 * 60;
-    } else if (timerProvider.currentSessionType == SessionType.shortBreak) {
-      return 5 * 60;
+  String _formatTime(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(2, '0');
+    final remainingSeconds = (seconds % 60).toString().padLeft(2, '0');
+    return '$minutes:$remainingSeconds';
+  }
+
+  IconData _getPlayPauseIcon(TimerState state) {
+    if (state == TimerState.running) {
+      return Icons.pause;
     } else {
-      return 15 * 60;
+      return Icons.play_arrow;
     }
   }
+
+  // String _getPlayPauseButtonText(TimerState state) {
+  //   if (state == TimerState.running) {
+  //     return 'Pause';
+  //   } else if (state == TimerState.paused) {
+  //     return 'Resume';
+  //   } else {
+  //     return 'Start';
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     final timerProvider = Provider.of<TimerProvider>(context);
 
     final isRunning = timerProvider.timerState == TimerState.running;
-    final isPaused = timerProvider.timerState == TimerState.paused;
-    final isInitial = timerProvider.timerState == TimerState.initial;
-    // final isStopped = timerProvider.timerState == TimerState.stopped;
 
-    void onStopButtonPressed() {
+    void handleStop() {
       timerProvider.resetTimer();
-      _controller.restart();
     }
 
-    void onPlayButtonPressed() {
+    void handlePlayPause() {
       if (isRunning) {
         timerProvider.pauseTimer();
-        _controller.pause();
-      } else if (isPaused || isInitial) {
+      } else {
         timerProvider.startTimer();
-        _controller.play();
       }
+    }
+
+    void handleResetCycle() {
+      timerProvider.resetCycle();
     }
 
     return Scaffold(
@@ -76,9 +84,9 @@ class _TimerScreenState extends State<TimerScreen> {
       ),
       body: Center(
         child: Column(
-          spacing: 100,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const SizedBox(height: 40),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -101,17 +109,29 @@ class _TimerScreenState extends State<TimerScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  timerProvider.currentSessionType == SessionType.work
-                      ? "Work Session"
-                      : timerProvider.currentSessionType ==
-                          SessionType.shortBreak
-                      ? "Short Break"
-                      : "Long Break",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 18,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      timerProvider.currentSessionType == SessionType.work
+                          ? "Work Session"
+                          : timerProvider.currentSessionType ==
+                              SessionType.shortBreak
+                          ? "Short Break"
+                          : "Long Break",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 18,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.skip_next),
+                      color: Theme.of(context).colorScheme.onSurface,
+                      onPressed: () {
+                        timerProvider.skipSession();
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -125,75 +145,65 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
               ],
             ),
-            NeonCircularTimer(
-              width: 250,
-              duration: _getCurrentSessionDuration(timerProvider),
-              controller: _controller,
-              isTimerTextShown: true,
-              isReverse: true,
-              isReverseAnimation: true,
-              neumorphicEffect: true,
-              textStyle: TextStyle(
-                fontSize: 50,
-                color: Theme.of(context).colorScheme.onPrimary,
+            const SizedBox(height: 50),
+            Text(
+              _formatTime(timerProvider.remainingTime),
+              style: TextStyle(
+                fontSize: 80,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              outerStrokeColor: Theme.of(context).colorScheme.onPrimary,
-              innerFillGradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.primaryContainer,
-                  Theme.of(context).colorScheme.onTertiary,
-                  Theme.of(context).colorScheme.tertiary,
-                  Theme.of(context).colorScheme.primaryContainer,
-                ],
-              ),
-              neonGradient: LinearGradient(
-                colors: [
-                  Theme.of(context).colorScheme.secondary,
-                  Theme.of(context).colorScheme.primaryContainer,
-                ],
-              ),
-              onComplete: () {
-                timerProvider.endSession();
-              },
             ),
+            const SizedBox(height: 50),
             Row(
-              spacing: 25,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Stop / reset button
                 MaterialButton(
                   height: 50,
                   minWidth: 100,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  onPressed: onStopButtonPressed,
+                  color: Theme.of(context).colorScheme.onTertiary,
+                  onPressed: handleResetCycle,
                   child: Icon(
-                    Icons.stop,
-                    size: 25,
+                    Icons.restart_alt,
+                    size: 30,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
-                // Play / pause button
+                const SizedBox(width: 25),
                 MaterialButton(
                   height: 50,
                   minWidth: 170,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  color: Theme.of(context).colorScheme.primary,
-                  onPressed: onPlayButtonPressed,
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  onPressed: handleStop,
                   child: Icon(
-                    isRunning ? Icons.pause : Icons.play_arrow,
-                    size: 30,
+                    Icons.stop,
+                    size: 25,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
+            MaterialButton(
+              height: 50,
+              minWidth: 290,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              color: Theme.of(context).colorScheme.primary,
+              onPressed: handlePlayPause,
+              child: Icon(
+                _getPlayPauseIcon(timerProvider.timerState),
+                size: 30,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
           ],
         ),
       ),
@@ -202,7 +212,6 @@ class _TimerScreenState extends State<TimerScreen> {
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 }
