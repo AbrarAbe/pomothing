@@ -82,11 +82,10 @@ class _TimerScreenState extends State<TimerScreen> {
           ),
         ],
       ),
-      body: Center(
+      body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 40),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -110,6 +109,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
                 const SizedBox(height: 20),
                 Row(
+                  spacing: 2,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
@@ -126,7 +126,7 @@ class _TimerScreenState extends State<TimerScreen> {
                     ),
                     IconButton(
                       icon: const Icon(Icons.skip_next),
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: Theme.of(context).colorScheme.tertiary,
                       onPressed: () {
                         timerProvider.skipSession();
                       },
@@ -151,7 +151,7 @@ class _TimerScreenState extends State<TimerScreen> {
               style: TextStyle(
                 fontSize: 80,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const SizedBox(height: 50),
@@ -198,12 +198,19 @@ class _TimerScreenState extends State<TimerScreen> {
               ),
               color: Theme.of(context).colorScheme.primary,
               onPressed: handlePlayPause,
-              child: Icon(
-                _getPlayPauseIcon(timerProvider.timerState),
-                size: 30,
-                color: Theme.of(context).colorScheme.onPrimary,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _getPlayPauseIcon(timerProvider.timerState),
+                    size: 30,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 50),
           ],
         ),
       ),

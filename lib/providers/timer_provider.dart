@@ -25,8 +25,13 @@ class TimerProvider extends ChangeNotifier {
   int get currentCycle => _currentCycle;
   int get remainingTime => _timeRemaining;
 
+  void _cancelTimer() {
+    if (_timerState == TimerState.running && _timer.isActive) {
+      _timer.cancel();
+    }
+  }
+
   void startTimer() {
-    // Checks if the timer is already running to avoid creating multiple timers.
     if (_timerState == TimerState.running) return;
     _timerState = TimerState.running;
     notifyListeners();
@@ -55,24 +60,23 @@ class TimerProvider extends ChangeNotifier {
   }
 
   void resetTimer() {
-    if (_timerState == TimerState.running) {
-      _timer.cancel();
-    }
-    _timerState = TimerState.initial;
+    _cancelTimer();
     _timeRemaining = _getDurationForSessionType(_currentSessionType);
+    _timerState = TimerState.initial;
     notifyListeners();
   }
 
   void resetCycle() {
-    _currentCycle = 0;
+    _cancelTimer();
     _currentSessionType = SessionType.work;
-    resetTimer();
+    _currentCycle = 0;
+    _timeRemaining = _workDuration;
+    _timerState = TimerState.initial;
     notifyListeners();
   }
 
   void skipSession() {
-    _timer.cancel();
-
+    _cancelTimer();
     if (_currentSessionType == SessionType.work) {
       _currentCycle++;
       if (_currentCycle % _cyclesBeforeLongBreak == 0) {
@@ -92,8 +96,7 @@ class TimerProvider extends ChangeNotifier {
   }
 
   void endSession() {
-    _timer.cancel();
-
+    _cancelTimer();
     if (_currentSessionType == SessionType.work) {
       _currentCycle++;
       if (_currentCycle % _cyclesBeforeLongBreak == 0) {
@@ -126,6 +129,7 @@ class TimerProvider extends ChangeNotifier {
   @override
   void dispose() {
     _timer.cancel();
+    _cancelTimer();
     super.dispose();
   }
 }
