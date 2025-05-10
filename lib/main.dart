@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pomothing/providers/timer_provider.dart';
+import 'package:pomothing/features/timer/timer_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'screens/timer_screen.dart';
+import 'features/timer/timer_screen.dart';
 import 'theme/theme_provider.dart';
 
 void main() async {

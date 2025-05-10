@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
 
-import '../models/session_type.dart';
-import '../models/timer_state.dart';
+import 'models/session_type.dart';
+import 'models/timer_state.dart';
 
 class TimerProvider extends ChangeNotifier {
   late Timer _timer;
