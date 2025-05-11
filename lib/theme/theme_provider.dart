@@ -1,7 +1,8 @@
-import 'package:pomothing/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'theme.dart';
 
 class ThemeProvider with ChangeNotifier {
   ThemeMode themeMode = ThemeMode.system;
