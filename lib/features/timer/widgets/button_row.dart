@@ -13,6 +13,7 @@ class ButtonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      spacing: 20,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         MaterialButton(
@@ -29,7 +30,6 @@ class ButtonRow extends StatelessWidget {
             color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
-        const SizedBox(width: 25),
         MaterialButton(
           height: 50,
           minWidth: 170,
