@@ -13,16 +13,10 @@ class TimerProvider extends ChangeNotifier {
   SessionType _currentSessionType = SessionType.work;
   int _currentCycle = 0;
 
-  // Remove hardcoded durations and cycles
-  // final int _workDuration = 25 * 60;
-  // final int _shortBreakDuration = 5 * 60;
-  // final int _longBreakDuration = 15 * 60;
-  // final int _cyclesBeforeLongBreak = 4;
-
   final AppSettings _settings; // Add a field to hold settings
 
   TimerProvider(this._settings)
-    : _timeRemaining = _settings.workDuration * 60; // Initialize with settings
+    : _timeRemaining = _settings.workDuration; // Initialize with settings
 
   AppSettings get settings => _settings; // Expose settings if needed
 
@@ -77,7 +71,7 @@ class TimerProvider extends ChangeNotifier {
     _cancelTimer();
     _currentSessionType = SessionType.work;
     _currentCycle = 0;
-    _timeRemaining = _settings.workDuration * 60; // Use settings
+    _timeRemaining = _settings.workDuration; // Use settings
     _timerState = TimerState.initial;
     notifyListeners();
   }
@@ -87,16 +81,15 @@ class TimerProvider extends ChangeNotifier {
     if (_currentSessionType == SessionType.work) {
       _currentCycle++;
       if (_currentCycle % _settings.sessionsBeforeLongBreak == 0) {
-        // Use settings
         _currentSessionType = SessionType.longBreak;
-        _timeRemaining = _settings.longBreakDuration * 60; // Use settings
+        _timeRemaining = _settings.longBreakDuration; // Use settings
       } else {
         _currentSessionType = SessionType.shortBreak;
-        _timeRemaining = _settings.shortBreakDuration * 60; // Use settings
+        _timeRemaining = _settings.shortBreakDuration; // Use settings
       }
     } else {
       _currentSessionType = SessionType.work;
-      _timeRemaining = _settings.workDuration * 60; // Use settings
+      _timeRemaining = _settings.workDuration; // Use settings
     }
 
     _timerState = TimerState.initial;
@@ -108,16 +101,15 @@ class TimerProvider extends ChangeNotifier {
     if (_currentSessionType == SessionType.work) {
       _currentCycle++;
       if (_currentCycle % _settings.sessionsBeforeLongBreak == 0) {
-        // Use settings
         _currentSessionType = SessionType.longBreak;
-        _timeRemaining = _settings.longBreakDuration * 60; // Use settings
+        _timeRemaining = _settings.longBreakDuration; // Use settings
       } else {
         _currentSessionType = SessionType.shortBreak;
-        _timeRemaining = _settings.shortBreakDuration * 60; // Use settings
+        _timeRemaining = _settings.shortBreakDuration; // Use settings
       }
     } else {
       _currentSessionType = SessionType.work;
-      _timeRemaining = _settings.workDuration * 60; // Use settings
+      _timeRemaining = _settings.workDuration; // Use settings
     }
 
     _timerState = TimerState.initial;
@@ -127,11 +119,11 @@ class TimerProvider extends ChangeNotifier {
   int _getDurationForSessionType(SessionType type) {
     switch (type) {
       case SessionType.work:
-        return _settings.workDuration * 60; // Use settings
+        return _settings.workDuration; // Use settings
       case SessionType.shortBreak:
-        return _settings.shortBreakDuration * 60; // Use settings
+        return _settings.shortBreakDuration; // Use settings
       case SessionType.longBreak:
-        return _settings.longBreakDuration * 60; // Use settings
+        return _settings.longBreakDuration; // Use settings
     }
   }
 
