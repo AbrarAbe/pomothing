@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:just_audio/just_audio.dart'; // Import just_audio
+
 import 'models/session_type.dart';
 import 'models/timer_state.dart';
 import '../settings/settings_provider.dart';
@@ -12,13 +14,30 @@ class TimerProvider with ChangeNotifier {
   int _remainingTime = 0;
   int _currentCycle = 1;
   late SettingsProvider _settingsProvider;
+  late AudioPlayer _audioPlayer;
+  
+  TimerProvider() {
+    // Initialize the audio player and load the sound
+    _initAudioPlayer();
+  }
 
-  TimerProvider();
+  Future<void> _initAudioPlayer() async {
+    _audioPlayer = AudioPlayer();
+    try {
+      // Load the audio file from assets
+      await _audioPlayer.setAsset('assets/audio/bell.m4a');
+      await _audioPlayer.setVolume(1.0);
+    } catch (e) {
+      // Handle errors, e.g., file not found
+      print("Error loading audio asset: $e");
+    }
+  }
 
   void updateSettingsProvider(SettingsProvider newSettingsProvider) {
     _settingsProvider = newSettingsProvider;
 
     final AppSettings currentSettings = _settingsProvider.settings;
+
     if (_timerState == TimerState.initial || _timerState == TimerState.paused) {
       final int newRemainingTime = _getDurationForSessionType(
         _currentSessionType,
@@ -87,26 +106,13 @@ class TimerProvider with ChangeNotifier {
     final settings = _settingsProvider.settings;
     _remainingTime = _getDurationForSessionType(SessionType.work, settings);
     notifyListeners();
+    // Optional: Stop audio playback if it was somehow playing
+    _audioPlayer.stop();
   }
 
   void skipSession() {
     _cancelTimer();
-    _handleSessionEnd();
-  }
-
-  void resetCycle() {
-    _cancelTimer();
-    _currentCycle = 1;
-    _currentSessionType = SessionType.work;
     final settings = _settingsProvider.settings;
-    _remainingTime = _getDurationForSessionType(SessionType.work, settings);
-    _timerState = TimerState.initial;
-    notifyListeners();
-  }
-
-  void _handleSessionEnd() {
-    final settings = _settingsProvider.settings;
-
     if (_currentSessionType == SessionType.work) {
       if (_currentCycle < settings.sessionsBeforeLongBreak) {
         _currentSessionType = SessionType.shortBreak;
@@ -122,15 +128,45 @@ class TimerProvider with ChangeNotifier {
         _currentCycle = 1;
       }
     }
-
     _remainingTime = _getDurationForSessionType(_currentSessionType, settings);
     _timerState = TimerState.initial;
     notifyListeners();
   }
 
+  void resetCycle() {
+    _cancelTimer();
+    _currentCycle = 1;
+    _currentSessionType = SessionType.work;
+    final settings = _settingsProvider.settings;
+    _remainingTime = _getDurationForSessionType(SessionType.work, settings);
+    _timerState = TimerState.initial;
+    notifyListeners();
+    // Optional: Stop audio playback
+    _audioPlayer.stop();
+  }
+
+  void _handleSessionEnd() {
+    skipSession();
+    // Play the audio when a session ends
+    _playCompletionSound();
+  }
+
+  void _playCompletionSound() async {
+    try {
+      // Seek to the beginning to play from start every time
+      await _audioPlayer.seek(Duration.zero);
+      // Play the sound
+      await _audioPlayer.play();
+    } catch (e) {
+      print("Error playing audio: $e");
+    }
+  }
+
   @override
   void dispose() {
     _timer.cancel();
+    // Dispose the audio player
+    _audioPlayer.dispose();
     super.dispose();
   }
 }
