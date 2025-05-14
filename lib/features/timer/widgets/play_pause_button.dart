@@ -22,11 +22,14 @@ class PlayPauseButton extends StatelessWidget {
       }
     }
 
-    return MaterialButton(
-      height: 50,
-      minWidth: 290,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      color: Theme.of(context).colorScheme.primary,
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        fixedSize: const Size(290, 60),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Theme.of(context).colorScheme.primary, // Button color
+        foregroundColor:
+            Theme.of(context).colorScheme.onPrimary, // Icon/text color
+      ),
       onPressed: handlePlayPause,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -35,7 +38,6 @@ class PlayPauseButton extends StatelessWidget {
           Icon(
             getPlayPauseIcon(timerState),
             size: 30,
-            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ],
       ),

@@ -15,13 +15,14 @@ class ButtonRow extends StatelessWidget {
       spacing: 20,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        MaterialButton(
-          height: 50,
-          minWidth: 100,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            fixedSize: const Size(100, 60),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.onTertiary,
           ),
-          color: Theme.of(context).colorScheme.onTertiary,
           onPressed: handleResetCycle,
           child: Icon(
             Icons.restart_alt,
@@ -29,13 +30,14 @@ class ButtonRow extends StatelessWidget {
             color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
-        MaterialButton(
-          height: 50,
-          minWidth: 170,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            fixedSize: const Size(170, 60),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           ),
-          color: Theme.of(context).colorScheme.primaryContainer,
           onPressed: handleStop,
           child: Icon(
             Icons.stop,
@@ -47,5 +49,3 @@ class ButtonRow extends StatelessWidget {
     );
   }
 }
-
-
