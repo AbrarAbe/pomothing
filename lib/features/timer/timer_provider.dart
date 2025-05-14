@@ -48,6 +48,7 @@ class TimerProvider with ChangeNotifier {
   SessionType get currentSessionType => _currentSessionType;
   int get currentCycle => _currentCycle;
   int get remainingTime => _remainingTime;
+
   void startTimer() {
     if (_timerState == TimerState.initial || _timerState == TimerState.paused) {
       _timerState = TimerState.running;
@@ -55,12 +56,18 @@ class TimerProvider with ChangeNotifier {
         if (_remainingTime > 0) {
           _remainingTime--;
           notifyListeners();
-      } else {
+        } else {
           _timer.cancel();
           _handleSessionEnd();
         }
       });
       notifyListeners();
+    }
+  }
+
+  void _cancelTimer() {
+    if (_timerState == TimerState.running && _timer.isActive) {
+      _timer.cancel();
     }
   }
 
@@ -73,7 +80,7 @@ class TimerProvider with ChangeNotifier {
   }
 
   void resetTimer() {
-    _timer.cancel();
+    _cancelTimer();
     _timerState = TimerState.initial;
     _currentCycle = 1;
     _currentSessionType = SessionType.work;
@@ -83,12 +90,12 @@ class TimerProvider with ChangeNotifier {
   }
 
   void skipSession() {
-    _timer.cancel();
+    _cancelTimer();
     _handleSessionEnd();
   }
 
   void resetCycle() {
-    _timer.cancel();
+    _cancelTimer();
     _currentCycle = 1;
     _currentSessionType = SessionType.work;
     final settings = _settingsProvider.settings;

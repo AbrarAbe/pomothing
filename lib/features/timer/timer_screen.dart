@@ -60,10 +60,6 @@ class _TimerScreenState extends State<TimerScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: navigateToSettings,
-          ),
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
@@ -75,6 +71,10 @@ class _TimerScreenState extends State<TimerScreen> {
                 },
               );
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: navigateToSettings,
           ),
         ],
       ),
