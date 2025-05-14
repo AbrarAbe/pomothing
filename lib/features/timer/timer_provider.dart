@@ -1,136 +1,129 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:async';
-
-import '../settings/models/app_settings.dart'; // Import AppSettings
+import 'package:flutter/foundation.dart';
 import 'models/session_type.dart';
 import 'models/timer_state.dart';
+import '../settings/settings_provider.dart';
+import '../settings/models/app_settings.dart';
 
-class TimerProvider extends ChangeNotifier {
+class TimerProvider with ChangeNotifier {
   late Timer _timer;
-  int _timeRemaining;
   TimerState _timerState = TimerState.initial;
   SessionType _currentSessionType = SessionType.work;
-  int _currentCycle = 0;
+  int _remainingTime = 0;
+  int _currentCycle = 1;
+  late SettingsProvider _settingsProvider;
 
-  final AppSettings _settings; // Add a field to hold settings
+  TimerProvider();
 
-  TimerProvider(this._settings)
-    : _timeRemaining = _settings.workDuration; // Initialize with settings
+  void updateSettingsProvider(SettingsProvider newSettingsProvider) {
+    _settingsProvider = newSettingsProvider;
 
-  AppSettings get settings => _settings; // Expose settings if needed
+    final AppSettings currentSettings = _settingsProvider.settings;
+    if (_timerState == TimerState.initial || _timerState == TimerState.paused) {
+      final int newRemainingTime = _getDurationForSessionType(
+        _currentSessionType,
+        currentSettings,
+      );
 
-  int get timeRemaining => _timeRemaining;
-  TimerState get timerState => _timerState;
-  SessionType get currentSessionType => _currentSessionType;
-  int get currentCycle => _currentCycle;
-  int get remainingTime => _timeRemaining;
-
-  void _cancelTimer() {
-    if (_timerState == TimerState.running && _timer.isActive) {
-      _timer.cancel();
+      if (_remainingTime != newRemainingTime) {
+        _remainingTime = newRemainingTime;
+        notifyListeners();
+      }
     }
   }
 
-  void startTimer() {
-    if (_timerState == TimerState.running) return;
-    _timerState = TimerState.running;
-    notifyListeners();
+  int _getDurationForSessionType(SessionType type, AppSettings settings) {
+    switch (type) {
+      case SessionType.work:
+        return settings.workDuration;
+      case SessionType.shortBreak:
+        return settings.shortBreakDuration;
+      case SessionType.longBreak:
+        return settings.longBreakDuration;
+    }
+  }
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_timeRemaining > 0) {
-        _timeRemaining--;
-        notifyListeners();
+  int get timeRemaining => _remainingTime;
+  TimerState get timerState => _timerState;
+  SessionType get currentSessionType => _currentSessionType;
+  int get currentCycle => _currentCycle;
+  int get remainingTime => _remainingTime;
+  void startTimer() {
+    if (_timerState == TimerState.initial || _timerState == TimerState.paused) {
+      _timerState = TimerState.running;
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_remainingTime > 0) {
+          _remainingTime--;
+          notifyListeners();
       } else {
-        endSession();
-      }
-    });
+          _timer.cancel();
+          _handleSessionEnd();
+        }
+      });
+      notifyListeners();
+    }
   }
 
   void pauseTimer() {
-    if (_timerState != TimerState.running) return;
-
-    _timer.cancel();
-    _timerState = TimerState.paused;
-    notifyListeners();
-  }
-
-  void resumeTimer() {
-    if (_timerState != TimerState.paused) return;
-    startTimer();
+    if (_timerState == TimerState.running) {
+      _timerState = TimerState.paused;
+      _timer.cancel();
+      notifyListeners();
+    }
   }
 
   void resetTimer() {
-    _cancelTimer();
-    _timeRemaining = _getDurationForSessionType(_currentSessionType);
+    _timer.cancel();
     _timerState = TimerState.initial;
-    notifyListeners();
-  }
-
-  void resetCycle() {
-    _cancelTimer();
+    _currentCycle = 1;
     _currentSessionType = SessionType.work;
-    _currentCycle = 0;
-    _timeRemaining = _settings.workDuration; // Use settings
-    _timerState = TimerState.initial;
+    final settings = _settingsProvider.settings;
+    _remainingTime = _getDurationForSessionType(SessionType.work, settings);
     notifyListeners();
   }
 
   void skipSession() {
-    _cancelTimer();
-    if (_currentSessionType == SessionType.work) {
-      _currentCycle++;
-      if (_currentCycle % _settings.sessionsBeforeLongBreak == 0) {
-        _currentSessionType = SessionType.longBreak;
-        _timeRemaining = _settings.longBreakDuration; // Use settings
-      } else {
-        _currentSessionType = SessionType.shortBreak;
-        _timeRemaining = _settings.shortBreakDuration; // Use settings
-      }
-    } else {
-      _currentSessionType = SessionType.work;
-      _timeRemaining = _settings.workDuration; // Use settings
-    }
+    _timer.cancel();
+    _handleSessionEnd();
+  }
 
+  void resetCycle() {
+    _timer.cancel();
+    _currentCycle = 1;
+    _currentSessionType = SessionType.work;
+    final settings = _settingsProvider.settings;
+    _remainingTime = _getDurationForSessionType(SessionType.work, settings);
     _timerState = TimerState.initial;
     notifyListeners();
   }
 
-  void endSession() {
-    _cancelTimer();
+  void _handleSessionEnd() {
+    final settings = _settingsProvider.settings;
+
     if (_currentSessionType == SessionType.work) {
-      _currentCycle++;
-      if (_currentCycle % _settings.sessionsBeforeLongBreak == 0) {
-        _currentSessionType = SessionType.longBreak;
-        _timeRemaining = _settings.longBreakDuration; // Use settings
-      } else {
+      if (_currentCycle < settings.sessionsBeforeLongBreak) {
         _currentSessionType = SessionType.shortBreak;
-        _timeRemaining = _settings.shortBreakDuration; // Use settings
+      } else {
+        _currentSessionType = SessionType.longBreak;
+        _currentCycle = 0;
       }
     } else {
       _currentSessionType = SessionType.work;
-      _timeRemaining = _settings.workDuration; // Use settings
+      if (_currentCycle > 0) {
+        _currentCycle++;
+      } else {
+        _currentCycle = 1;
+      }
     }
 
+    _remainingTime = _getDurationForSessionType(_currentSessionType, settings);
     _timerState = TimerState.initial;
     notifyListeners();
-  }
-
-  int _getDurationForSessionType(SessionType type) {
-    switch (type) {
-      case SessionType.work:
-        return _settings.workDuration; // Use settings
-      case SessionType.shortBreak:
-        return _settings.shortBreakDuration; // Use settings
-      case SessionType.longBreak:
-        return _settings.longBreakDuration; // Use settings
-    }
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    _cancelTimer();
     super.dispose();
   }
 }

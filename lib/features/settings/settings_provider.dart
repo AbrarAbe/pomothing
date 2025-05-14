@@ -10,7 +10,7 @@ class SettingsProvider with ChangeNotifier {
 
   AppSettings get settings => _settings;
 
-  SettingsProvider() {
+  SettingsProvider(SharedPreferences prefs) {
     // Load settings immediately when the provider is created
     _loadSettings();
   }
@@ -32,8 +32,6 @@ class SettingsProvider with ChangeNotifier {
       // Fallback to default settings if loading fails
       _settings = AppSettings();
     }
-    // No need to notifyListeners here unless this load happens AFTER the provider is first read
-    // In the constructor, listeners aren't attached yet.
   }
 
   // Save settings to SharedPreferences

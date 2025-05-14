@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../theme/theme_provider.dart';
+import '../settings/settings_screen.dart';
 import 'timer_provider.dart';
 import 'models/timer_state.dart';
 import 'widgets/timer_status_header.dart';
@@ -39,14 +41,29 @@ class _TimerScreenState extends State<TimerScreen> {
       }
     }
 
+    void handleSkipSession() {
+      timerProvider.skipSession();
+    }
+
     void handleResetCycle() {
       timerProvider.resetCycle();
+    }
+
+    void navigateToSettings() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      );
     }
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: navigateToSettings,
+          ),
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
@@ -67,7 +84,7 @@ class _TimerScreenState extends State<TimerScreen> {
           children: [
             TimerStatusHeader(
               currentSessionType: timerProvider.currentSessionType,
-              skipSession: timerProvider.skipSession,
+              skipSession: handleSkipSession,
               currentCycle: timerProvider.currentCycle,
             ),
             const SizedBox(height: 50),

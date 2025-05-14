@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ButtonRow extends StatelessWidget {
+  final VoidCallback handleResetCycle;
+  final VoidCallback handleStop;
   const ButtonRow({
     super.key,
     required this.handleResetCycle,
     required this.handleStop,
   });
-
-  final VoidCallback handleResetCycle;
-  final VoidCallback handleStop;
 
   @override
   Widget build(BuildContext context) {
@@ -48,3 +47,5 @@ class ButtonRow extends StatelessWidget {
     );
   }
 }
+
+

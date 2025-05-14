@@ -1,44 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Keep this import
 
 import 'theme/theme_provider.dart';
 import 'features/timer/timer_provider.dart';
-import 'features/settings/settings_provider.dart'; // Add this import
 import 'features/timer/timer_screen.dart';
+import 'features/settings/settings_provider.dart'; // Import SettingsProvider
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final themeProvider = ThemeProvider();
-  final settingsProvider = SettingsProvider(); // Add this line
-  final timerProvider = TimerProvider(
-    settingsProvider.settings,
-  ); // Pass settings to TimerProvider
-  await themeProvider.loadTheme();
-  // Settings are loaded in the SettingsProvider constructor, no need to call loadSettings here.
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => themeProvider),
-        ChangeNotifierProvider(create: (context) => timerProvider),
-        ChangeNotifierProvider(
-          create: (context) => settingsProvider,
-        ), // Add this provider
-      ],
-      child: const PomothingApp(),
-    ),
-  );
+  final prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(prefs: prefs));
 }
 
-class PomothingApp extends StatelessWidget {
-  const PomothingApp({super.key});
+class MyApp extends StatelessWidget {
+  final SharedPreferences prefs;
 
+  const MyApp({super.key, required this.prefs});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: Provider.of<ThemeProvider>(context).themeData,
-      home: TimerScreen(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(
+          create:
+              (_) => SettingsProvider(prefs), // SettingsProvider needs prefs
+        ),
+        // Use ChangeNotifierProxyProvider for TimerProvider
+        ChangeNotifierProxyProvider<SettingsProvider, TimerProvider>(
+          create:
+              (context) => TimerProvider(), // Initial creation (can be basic)
+          update: (context, settingsProvider, timerProvider) {
+            // This update function is called whenever SettingsProvider notifies listeners
+            // or initially when the provider is created.
+            timerProvider ??= TimerProvider();
+            // Pass the updated settingsProvider to the timerProvider
+            timerProvider.updateSettingsProvider(settingsProvider);
+            return timerProvider;
+          },
+        ),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Focus Timer',
+            theme: themeProvider.themeData,
+            home: const TimerScreen(),
+          );
+        },
+      ),
     );
   }
 }
