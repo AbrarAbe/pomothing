@@ -82,14 +82,33 @@ class _TimerScreenState extends State<TimerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              "Pomo",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 40,
+                fontWeight: FontWeight.w200,
+                letterSpacing: 25,
+              ),
+            ),
+            Text(
+              "Thing",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.secondary,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 10,
+              ),
+            ),
+            const SizedBox(height: 70),
+            TimeDisplay(remainingTime: timerProvider.remainingTime),
+            const SizedBox(height: 10),
             TimerStatusHeader(
               currentSessionType: timerProvider.currentSessionType,
               skipSession: handleSkipSession,
               currentCycle: timerProvider.currentCycle,
             ),
-            const SizedBox(height: 50),
-            TimeDisplay(remainingTime: timerProvider.remainingTime),
-            const SizedBox(height: 50),
+            const SizedBox(height: 60),
             ButtonRow(
               handleResetCycle: handleResetCycle,
               handleStop: handleStop,
@@ -99,7 +118,7 @@ class _TimerScreenState extends State<TimerScreen> {
               timerState: timerProvider.timerState,
               handlePlayPause: handlePlayPause,
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 60),
           ],
         ),
       ),

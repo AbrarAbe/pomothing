@@ -9,12 +9,46 @@ class TimeDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      formatTime(remainingTime),
-      style: TextStyle(
-        fontSize: 80,
-        fontWeight: FontWeight.bold,
-        color: Theme.of(context).colorScheme.primary,
+    final textStyle = TextStyle(
+      fontSize: 80,
+      fontWeight: FontWeight.bold,
+      color: Colors.white70,
+    );
+    return Container(
+      width: 251,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.all(Radius.circular(25)),
+        color: Theme.of(context).colorScheme.secondary,
+        boxShadow: [
+          BoxShadow(color: Colors.black26, blurRadius: 3, offset: Offset(0, 3)),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 110,
+            alignment: Alignment.center,
+            child: Text(formatMinutes(remainingTime), style: textStyle),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 13),
+            child: Text(
+              ':',
+              style: TextStyle(
+                fontSize: 80,
+                fontWeight: FontWeight.bold,
+                color: Colors.white54,
+              ),
+            ),
+          ),
+          Container(
+            width: 110,
+            alignment: Alignment.center,
+            child: Text(formatSeconds(remainingTime), style: textStyle),
+          ),
+        ],
       ),
     );
   }
