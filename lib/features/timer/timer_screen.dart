@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +6,7 @@ import '../../theme/theme_provider.dart';
 import '../settings/settings_screen.dart';
 import 'timer_provider.dart';
 import 'models/timer_state.dart';
+import 'models/session_type.dart';
 import 'widgets/timer_status_header.dart';
 import 'widgets/time_display.dart';
 import 'widgets/button_row.dart';
@@ -18,9 +20,54 @@ class TimerScreen extends StatefulWidget {
 }
 
 class _TimerScreenState extends State<TimerScreen> {
+  TimerState? _previousTimerState;
+  SessionType? _previousSessionType;
+  String? _sessionEndMessage;
+  Timer? _messageTimer;
+
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final timerProvider = Provider.of<TimerProvider>(context);
+
+    final bool sessionJustEnded =
+        (_previousTimerState == TimerState.running ||
+            _previousTimerState == TimerState.paused) &&
+        timerProvider.timerState == TimerState.initial &&
+        _previousSessionType != timerProvider.currentSessionType;
+
+    if (sessionJustEnded) {
+      _updateSessionEndMessage(timerProvider.currentSessionType);
+    }
+
+    _previousTimerState = timerProvider.timerState;
+    _previousSessionType = timerProvider.currentSessionType;
+  }
+
+  void _updateSessionEndMessage(SessionType nextSessionType) {
+    String message;
+    switch (nextSessionType) {
+      case SessionType.work:
+        message = 'Break over! Time to Focus!';
+        break;
+      case SessionType.shortBreak:
+        message = 'Work session complete! Take a Short Break.';
+        break;
+      case SessionType.longBreak:
+        message = 'Work session complete! Take a Long Break.';
+        break;
+    }
+
+    setState(() {
+      _sessionEndMessage = message;
+      _messageTimer?.cancel();
+    });
+  }
+
+  @override
+  void dispose() {
+    _messageTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -28,9 +75,14 @@ class _TimerScreenState extends State<TimerScreen> {
     final timerProvider = Provider.of<TimerProvider>(context);
 
     final isRunning = timerProvider.timerState == TimerState.running;
-
     void handleStop() {
       timerProvider.resetTimer();
+    }
+
+    void dismissSessionEndMessage() {
+      setState(() {
+        _sessionEndMessage = null;
+      });
     }
 
     void handlePlayPause() {
@@ -38,15 +90,18 @@ class _TimerScreenState extends State<TimerScreen> {
         timerProvider.pauseTimer();
       } else {
         timerProvider.startTimer();
+        dismissSessionEndMessage();
       }
     }
 
     void handleSkipSession() {
       timerProvider.skipSession();
+      dismissSessionEndMessage();
     }
 
     void handleResetCycle() {
       timerProvider.resetCycle();
+      dismissSessionEndMessage();
     }
 
     void navigateToSettings() {
@@ -102,6 +157,23 @@ class _TimerScreenState extends State<TimerScreen> {
             ),
             const SizedBox(height: 70),
             TimeDisplay(remainingTime: timerProvider.remainingTime),
+            if (_sessionEndMessage != null) const SizedBox(height: 10),
+            if (_sessionEndMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 16.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: Text(
+                  _sessionEndMessage!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Theme.of(context).colorScheme.tertiary,
+                  ),
+                ),
+              ),
             const SizedBox(height: 10),
             TimerStatusHeader(
               currentSessionType: timerProvider.currentSessionType,
@@ -123,10 +195,5 @@ class _TimerScreenState extends State<TimerScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }

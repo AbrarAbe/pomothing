@@ -15,7 +15,7 @@ class TimeDisplay extends StatelessWidget {
       color: Colors.white70,
     );
     return Container(
-      width: 251,
+      width: 290,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(25)),
