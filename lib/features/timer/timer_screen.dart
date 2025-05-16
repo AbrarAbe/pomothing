@@ -1,12 +1,12 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../theme/theme_provider.dart';
 import '../settings/settings_screen.dart';
 import 'timer_provider.dart';
 import 'models/timer_state.dart';
 import 'models/session_type.dart';
+import 'widgets/appbar.dart';
+import 'widgets/session_end_message.dart';
 import 'widgets/timer_status_header.dart';
 import 'widgets/time_display.dart';
 import 'widgets/button_row.dart';
@@ -23,7 +23,7 @@ class _TimerScreenState extends State<TimerScreen> {
   TimerState? _previousTimerState;
   SessionType? _previousSessionType;
   String? _sessionEndMessage;
-  Timer? _messageTimer;
+  Color? _sessionEndMessageColor;
 
   @override
   void didChangeDependencies() {
@@ -46,43 +46,41 @@ class _TimerScreenState extends State<TimerScreen> {
 
   void _updateSessionEndMessage(SessionType nextSessionType) {
     String message;
+    Color color;
     switch (nextSessionType) {
       case SessionType.work:
         message = 'Break over! Time to Focus!';
+        color = Theme.of(context).colorScheme.error;
         break;
       case SessionType.shortBreak:
         message = 'Work session complete! Take a Short Break.';
+        color = Theme.of(context).colorScheme.tertiary;
         break;
       case SessionType.longBreak:
         message = 'Work session complete! Take a Long Break.';
+        color = Theme.of(context).colorScheme.tertiary;
         break;
     }
 
     setState(() {
       _sessionEndMessage = message;
-      _messageTimer?.cancel();
+      _sessionEndMessageColor = color;
     });
-  }
-
-  @override
-  void dispose() {
-    _messageTimer?.cancel();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final timerProvider = Provider.of<TimerProvider>(context);
-
     final isRunning = timerProvider.timerState == TimerState.running;
-    void handleStop() {
-      timerProvider.resetTimer();
-    }
 
     void dismissSessionEndMessage() {
       setState(() {
         _sessionEndMessage = null;
       });
+    }
+
+    void handleStop() {
+      timerProvider.resetTimer();
     }
 
     void handlePlayPause() {
@@ -113,26 +111,7 @@ class _TimerScreenState extends State<TimerScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        actions: [
-          Consumer<ThemeProvider>(
-            builder: (context, themeProvider, child) {
-              return IconButton(
-                icon: Icon(
-                  themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                ),
-                onPressed: () {
-                  themeProvider.toggleTheme(!themeProvider.isDarkMode);
-                },
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: navigateToSettings,
-          ),
-        ],
-      ),
+      appBar: AppBarWidget(navigateToSettings: navigateToSettings),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -159,20 +138,9 @@ class _TimerScreenState extends State<TimerScreen> {
             TimeDisplay(remainingTime: timerProvider.remainingTime),
             if (_sessionEndMessage != null) const SizedBox(height: 10),
             if (_sessionEndMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 16.0,
-                  left: 16.0,
-                  right: 16.0,
-                ),
-                child: Text(
-                  _sessionEndMessage!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Theme.of(context).colorScheme.tertiary,
-                  ),
-                ),
+              SessionEndMessage(
+                sessionEndMessage: _sessionEndMessage,
+                sessionEndMessageColor: _sessionEndMessageColor,
               ),
             const SizedBox(height: 10),
             TimerStatusHeader(
