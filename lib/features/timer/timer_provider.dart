@@ -101,10 +101,8 @@ class TimerProvider with ChangeNotifier {
   void resetTimer() {
     _cancelTimer();
     _timerState = TimerState.initial;
-    _currentCycle = 1;
-    _currentSessionType = SessionType.work;
     final settings = _settingsProvider.settings;
-    _remainingTime = _getDurationForSessionType(SessionType.work, settings);
+    _remainingTime = _getDurationForSessionType(currentSessionType, settings);
     notifyListeners();
     // Optional: Stop audio playback if it was somehow playing
     _audioPlayer.stop();
