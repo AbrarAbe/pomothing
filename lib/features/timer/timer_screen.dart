@@ -24,6 +24,7 @@ class _TimerScreenState extends State<TimerScreen> {
   SessionType? _previousSessionType;
   String? _sessionEndMessage;
   Color? _sessionEndMessageColor;
+  bool _buttonPressed = false;
 
   @override
   void didChangeDependencies() {
@@ -34,7 +35,8 @@ class _TimerScreenState extends State<TimerScreen> {
         (_previousTimerState == TimerState.running ||
             _previousTimerState == TimerState.paused) &&
         timerProvider.timerState == TimerState.initial &&
-        _previousSessionType != timerProvider.currentSessionType;
+        _previousSessionType != timerProvider.currentSessionType &&
+        !_buttonPressed;
 
     if (sessionJustEnded) {
       _updateSessionEndMessage(timerProvider.currentSessionType);
@@ -42,6 +44,8 @@ class _TimerScreenState extends State<TimerScreen> {
 
     _previousTimerState = timerProvider.timerState;
     _previousSessionType = timerProvider.currentSessionType;
+    // Reset the flag after checking
+    _buttonPressed = false;
   }
 
   void _updateSessionEndMessage(SessionType nextSessionType) {
@@ -80,6 +84,7 @@ class _TimerScreenState extends State<TimerScreen> {
     }
 
     void handleStop() {
+      _buttonPressed = true;
       timerProvider.resetTimer();
     }
 
@@ -93,11 +98,13 @@ class _TimerScreenState extends State<TimerScreen> {
     }
 
     void handleSkipSession() {
+      _buttonPressed = true;
       timerProvider.skipSession();
       dismissSessionEndMessage();
     }
 
     void handleResetCycle() {
+      _buttonPressed = true;
       timerProvider.resetCycle();
       dismissSessionEndMessage();
     }
