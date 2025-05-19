@@ -1,13 +1,17 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart'; // Import just_audio
+import 'package:timezone/timezone.dart' as tz; // Import timezone
 
 import 'models/session_type.dart';
 import 'models/timer_state.dart';
 import '../settings/settings_provider.dart';
 import '../settings/models/app_settings.dart';
+import '../../services/notification_service.dart'; // Import NotificationService
 
 class TimerProvider with ChangeNotifier {
+  final NotificationService _notificationService =
+      NotificationService(); // Create an instance
   late Timer _timer;
   TimerState _timerState = TimerState.initial;
   SessionType _currentSessionType = SessionType.work;
@@ -15,7 +19,7 @@ class TimerProvider with ChangeNotifier {
   int _currentCycle = 1;
   late SettingsProvider _settingsProvider;
   late AudioPlayer _audioPlayer;
-  
+
   TimerProvider() {
     // Initialize the audio player and load the sound
     _initAudioPlayer();
@@ -111,6 +115,7 @@ class TimerProvider with ChangeNotifier {
   void skipSession() {
     _cancelTimer();
     final settings = _settingsProvider.settings;
+
     if (_currentSessionType == SessionType.work) {
       if (_currentCycle < settings.sessionsBeforeLongBreak) {
         _currentSessionType = SessionType.shortBreak;
@@ -144,9 +149,49 @@ class TimerProvider with ChangeNotifier {
   }
 
   void _handleSessionEnd() {
-    skipSession();
+    // Determine the type of session that just ended (before skipping)
+    final SessionType endedSessionType = _currentSessionType;
+
     // Play the audio when a session ends
     _playCompletionSound();
+
+    // Schedule a notification for the session end
+    _scheduleSessionEndNotification(endedSessionType);
+
+    // Skip to the next session after handling the end
+    skipSession();
+  }
+
+  void _scheduleSessionEndNotification(SessionType sessionType) {
+    debugPrint(
+      'Attempting to schedule notification for session type: $sessionType',
+    ); // Debug print
+    String title;
+    String body;
+
+    switch (sessionType) {
+      case SessionType.work:
+        title = 'Work Session Complete!';
+        body = 'Time for a break.';
+        break;
+      case SessionType.shortBreak:
+        title = 'Short Break Complete!';
+        body = 'Time to get back to work.';
+        break;
+      case SessionType.longBreak:
+        title = 'Long Break Complete!';
+        body = 'Time to get back to work.';
+        break;
+    }
+
+    // Schedule the notification for the current time
+    _notificationService.scheduleNotification(
+      title: title,
+      body: body,
+      scheduledDate: tz.TZDateTime.now(
+        tz.local,
+      ).add(const Duration(seconds: 1)), // Schedule 1 seconds in the future
+    );
   }
 
   void _playCompletionSound() async {

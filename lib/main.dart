@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Keep this import
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_timezone/flutter_timezone.dart';
 
 import 'theme/theme_provider.dart';
 import 'features/timer/timer_provider.dart';
 import 'features/timer/timer_screen.dart';
-import 'features/settings/settings_provider.dart'; // Import SettingsProvider
+import 'features/settings/settings_provider.dart';
+import 'services/notification_service.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  tz.initializeTimeZones();
+  try {
+    final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    tz.setLocalLocation(tz.getLocation(timeZoneName));
+  } catch (e) {
+    debugPrint('Could not get native timezone, falling back: $e');
+    tz.setLocalLocation(tz.getLocation('UTC'));
+  }
+
+  await NotificationService().initializeNotifications();
   final prefs = await SharedPreferences.getInstance();
   runApp(MyApp(prefs: prefs));
 }
@@ -17,24 +32,19 @@ class MyApp extends StatelessWidget {
   final SharedPreferences prefs;
 
   const MyApp({super.key, required this.prefs});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
-          create:
-              (_) => SettingsProvider(prefs), // SettingsProvider needs prefs
+          create: (_) => SettingsProvider(prefs),
         ),
-        // Use ChangeNotifierProxyProvider for TimerProvider
         ChangeNotifierProxyProvider<SettingsProvider, TimerProvider>(
-          create:
-              (context) => TimerProvider(), // Initial creation (can be basic)
+          create: (context) => TimerProvider(),
           update: (context, settingsProvider, timerProvider) {
-            // This update function is called whenever SettingsProvider notifies listeners
-            // or initially when the provider is created.
             timerProvider ??= TimerProvider();
-            // Pass the updated settingsProvider to the timerProvider
             timerProvider.updateSettingsProvider(settingsProvider);
             return timerProvider;
           },
@@ -44,7 +54,7 @@ class MyApp extends StatelessWidget {
         builder: (context, themeProvider, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'Focus Timer',
+            title: 'Pomothing',
             theme: themeProvider.themeData,
             home: const TimerScreen(),
           );
