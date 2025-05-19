@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 // Global instance of the plugin
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
-// Define a top-level function for the notification tap action (required by plugin)
+int _notificationIdCounter = 0;
+
+// Function to get a unique ID
+int _generateUniqueId() {
+  // A simple incrementing counter is sufficient for this example.
+  // In a more complex app, you might need a more robust ID generation strategy
+  // if you expect very large numbers of notifications or specific persistence needs.
+  _notificationIdCounter++;
+  return _notificationIdCounter;
+}
+
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
   // handle action
-  // This function will be executed in the background on Android when a notification is tapped.
 }
 
 class NotificationService {
@@ -76,5 +86,59 @@ class NotificationService {
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
-  // Add methods here later for scheduling notifications, cancelling notifications, etc.
+  Future<int> scheduleNotification({
+    required String title,
+    required String body,
+    required tz.TZDateTime scheduledDate,
+    String? payload,
+  }) async {
+    final int id = _generateUniqueId(); // Get a unique ID for this notification
+
+    const AndroidNotificationDetails
+    androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'pomodoro_timer_channel_id', // Channel ID (needs to be consistent)
+      'Pomodoro Timer Notifications', // Channel name shown to the user
+      channelDescription:
+          'Notifications for completed Pomodoro sessions', // Channel description
+      importance: Importance.high,
+      priority: Priority.high,
+      ticker: 'ticker',
+    );
+
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails();
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      id, // Unique ID for the notification
+      title,
+      body,
+      scheduledDate, // The exact time to show the notification
+      platformChannelSpecifics,
+      androidScheduleMode:
+          AndroidScheduleMode
+              .exactAllowWhileIdle, // Use exact mode for precision
+      payload: payload,
+      matchDateTimeComponents:
+          DateTimeComponents
+              .time, // Optional: Match only time for recurring notifications (not needed for single event)
+    );
+
+    debugPrint('Scheduled notification with ID: $id for $scheduledDate');
+    return id; // Return the ID so the TimerProvider can keep track of it
+  }
+
+  Future<void> cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+    debugPrint('Cancelled notification with ID: $id');
+  }
+
+  Future<void> cancelAllNotifications() async {
+    await flutterLocalNotificationsPlugin.cancelAll();
+    debugPrint('Cancelled all pending notifications');
+  }
 }
