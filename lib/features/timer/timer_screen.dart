@@ -63,7 +63,6 @@ class _TimerScreenState extends State<TimerScreen> {
       case SessionType.longBreak:
         message = 'Work session complete! Take a Long Break.';
         color = Theme.of(context).colorScheme.tertiary;
-        break;
     }
 
     setState(() {
@@ -86,6 +85,7 @@ class _TimerScreenState extends State<TimerScreen> {
     void handleStop() {
       _buttonPressed = true;
       timerProvider.resetTimer();
+      dismissSessionEndMessage(); // Also dismiss message on stop
     }
 
     void handlePlayPause() {
@@ -123,49 +123,55 @@ class _TimerScreenState extends State<TimerScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Spacer(flex: 2), // Use Spacer for flexible spacing
+
             Text(
               "Pomo",
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
-                fontSize: 40,
-                fontWeight: FontWeight.w200,
-                letterSpacing: 25,
+                fontSize: 48,
+                fontWeight: FontWeight.w300,
+                letterSpacing: 20,
               ),
             ),
             Text(
               "Thing",
               style: TextStyle(
                 color: Theme.of(context).colorScheme.secondary,
-                fontSize: 20,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 10,
+                letterSpacing: 12,
               ),
             ),
-            const SizedBox(height: 70),
+
+            const Spacer(flex: 2),
             TimeDisplay(remainingTime: timerProvider.remainingTime),
-            if (_sessionEndMessage != null) const SizedBox(height: 10),
+            if (_sessionEndMessage != null) const SizedBox(height: 16),
             if (_sessionEndMessage != null)
               SessionEndMessage(
                 sessionEndMessage: _sessionEndMessage,
                 sessionEndMessageColor: _sessionEndMessageColor,
               ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 24),
+
             TimerStatusHeader(
               currentSessionType: timerProvider.currentSessionType,
               skipSession: handleSkipSession,
               currentCycle: timerProvider.currentCycle,
             ),
-            const SizedBox(height: 60),
+
+            const Spacer(flex: 2),
             ButtonRow(
               handleResetCycle: handleResetCycle,
               handleStop: handleStop,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             PlayPauseButton(
               timerState: timerProvider.timerState,
               handlePlayPause: handlePlayPause,
             ),
-            const SizedBox(height: 60),
+
+            const Spacer(flex: 4),
           ],
         ),
       ),
