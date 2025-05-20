@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'settings_provider.dart';
+
 import 'models/app_settings.dart';
+import 'settings_provider.dart';
+import 'widgets/save_settings_button.dart';
+import 'widgets/slider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -39,7 +42,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Call the provider's reset method
     Provider.of<SettingsProvider>(context, listen: false).resetToDefaults();
     setState(() {
-      _localSettings = AppSettings();
+      // Re-initialize local settings with defaults after provider reset
+      // Fetching defaults from the provider ensures consistency
+      _localSettings =
+          Provider.of<SettingsProvider>(context, listen: false).settings;
     });
   }
 
@@ -48,11 +54,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         children: [
           // Work Duration Slider
-          _buildSettingSlider(
-            context,
+          SettingSlider(
             title: 'Work Duration',
             value:
                 (_localSettings.workDuration ~/ 60)
@@ -71,11 +76,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             displayValue:
                 '${_localSettings.workDuration ~/ 60} min', // Display in minutes
           ),
-          const Divider(),
+          Divider(
+            height: 30,
+            thickness: 5,
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
 
           // Short Break Duration Slider
-          _buildSettingSlider(
-            context,
+          SettingSlider(
             title: 'Short Break Duration',
             value:
                 (_localSettings.shortBreakDuration ~/ 60)
@@ -94,11 +102,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             displayValue:
                 '${_localSettings.shortBreakDuration ~/ 60} min', // Display in minutes
           ),
-          const Divider(),
+          Divider(
+            height: 30,
+            thickness: 5,
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
 
           // Long Break Duration Slider
-          _buildSettingSlider(
-            context,
+          SettingSlider(
             title: 'Long Break Duration',
             value:
                 (_localSettings.longBreakDuration ~/ 60)
@@ -117,11 +128,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             displayValue:
                 '${_localSettings.longBreakDuration ~/ 60} min', // Display in minutes
           ),
-          const Divider(),
+          Divider(
+            height: 30,
+            thickness: 5,
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
 
           // Sessions Before Long Break Slider
-          _buildSettingSlider(
-            context,
+          SettingSlider(
             title: 'Sessions Before Long Break',
             value: _localSettings.sessionsBeforeLongBreak.toDouble(),
             min: 1,
@@ -136,60 +150,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
             displayValue: '${_localSettings.sessionsBeforeLongBreak}',
           ),
-          const Divider(),
+          Divider(
+            height: 30,
+            thickness: 5,
+            color: Theme.of(context).colorScheme.primaryContainer,
+          ),
 
           const SizedBox(height: 20),
-          ElevatedButton(
+          SaveSettingsButton(
             onPressed: _saveSettings, // Call the local save method
-            child: const Text('Save Settings'),
+            text: 'Save Settings',
+            icon: Icons.save,
+            color: Theme.of(context).colorScheme.tertiary,
           ),
-          const SizedBox(height: 10), // Add some spacing
-          ElevatedButton(
-            onPressed: _resetToDefaults, // Call the local reset method
-            child: const Text('Reset to Defaults'),
+          const SizedBox(height: 20), // Add some spacing
+          SaveSettingsButton(
+            onPressed: _resetToDefaults, // Call the local save method
+            text: 'Reset to Default',
+            icon: Icons.restore,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSettingSlider(
-    BuildContext context, {
-    required String title,
-    required double value,
-    required double min,
-    required double max,
-    required int divisions,
-    required ValueChanged<double> onChanged,
-    required String displayValue,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: Theme.of(context).textTheme.titleMedium),
-        Row(
-          children: [
-            Expanded(
-              child: Slider(
-                value: value,
-                min: min,
-                max: max,
-                divisions: divisions,
-                label: value.round().toString(),
-                onChanged: onChanged,
-              ),
-            ),
-            SizedBox(
-              width: 60,
-              child: Text(
-                displayValue,
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.end,
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

@@ -165,7 +165,7 @@ class _TimerScreenState extends State<TimerScreen> {
               handleResetCycle: handleResetCycle,
               handleStop: handleStop,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             PlayPauseButton(
               timerState: timerProvider.timerState,
               handlePlayPause: handlePlayPause,
