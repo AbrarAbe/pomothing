@@ -7,19 +7,19 @@ import 'models/app_settings.dart';
 class SettingsProvider with ChangeNotifier {
   AppSettings _settings = AppSettings(); // Default settings initially
   final String _settingsKey = 'app_settings'; // Key for SharedPreferences
+  final SharedPreferences _prefs; // Store the SharedPreferences instance
 
   AppSettings get settings => _settings;
 
-  SettingsProvider(SharedPreferences prefs) {
+  SettingsProvider(this._prefs) {
     // Load settings immediately when the provider is created
     _loadSettings();
   }
 
   // Load settings from SharedPreferences
-  Future<void> _loadSettings() async {
+  void _loadSettings() {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final settingsString = prefs.getString(_settingsKey);
+      final settingsString = _prefs.getString(_settingsKey);
       if (settingsString != null) {
         final settingsMap = jsonDecode(settingsString) as Map<String, dynamic>;
         _settings = AppSettings.fromJson(settingsMap);
@@ -37,9 +37,8 @@ class SettingsProvider with ChangeNotifier {
   // Save settings to SharedPreferences
   Future<void> _saveSettings() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
       final settingsString = jsonEncode(_settings.toJson());
-      await prefs.setString(_settingsKey, settingsString);
+      await _prefs.setString(_settingsKey, settingsString);
       print('Settings saved: $_settings'); // Debug print
     } catch (e) {
       print('Error saving settings: $e');

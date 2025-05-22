@@ -39,7 +39,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(prefs),
+          create: (_) {
+            return SettingsProvider(prefs);
+          },
         ),
         ChangeNotifierProxyProvider<SettingsProvider, TimerProvider>(
           create: (context) => TimerProvider(),
