@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../theme/theme_provider.dart';
 import '../settings/settings_screen.dart';
 import 'timer_provider.dart';
 import 'models/timer_state.dart';
 import 'models/session_type.dart';
-import 'widgets/appbar.dart';
+import '../../widgets/appbar.dart';
 import 'widgets/session_end_message.dart';
 import 'widgets/timer_status_header.dart';
 import 'widgets/time_display.dart';
@@ -118,7 +119,22 @@ class _TimerScreenState extends State<TimerScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBarWidget(navigateToSettings: navigateToSettings),
+      appBar: AppBarWidget(
+        widget: Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) {
+            return IconButton(
+              icon: Icon(
+                themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              ),
+              onPressed: () {
+                themeProvider.toggleTheme(!themeProvider.isDarkMode);
+              },
+            );
+          },
+        ),
+        action: navigateToSettings,
+        actionsIcon: Icons.settings,
+      ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

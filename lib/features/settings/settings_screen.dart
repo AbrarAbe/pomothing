@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pomothing/widgets/appbar.dart';
 import 'package:provider/provider.dart';
 
+import '../../widgets/alert.dart';
 import 'models/app_settings.dart';
 import 'settings_provider.dart';
 import 'widgets/save_settings_button.dart';
@@ -14,7 +16,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late AppSettings _localSettings; // Local state for settings
+  late AppSettings _localSettings;
 
   @override
   void initState() {
@@ -38,21 +40,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Navigator.pop(context);
   }
 
-  void _resetToDefaults() {
-    // Call the provider's reset method
-    Provider.of<SettingsProvider>(context, listen: false).resetToDefaults();
-    setState(() {
-      // Re-initialize local settings with defaults after provider reset
-      // Fetching defaults from the provider ensures consistency
-      _localSettings =
-          Provider.of<SettingsProvider>(context, listen: false).settings;
-    });
+  void _resetToDefaults(BuildContext context) async {
+    bool? confirmReset = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertWidget(
+          title: const Text('Reset Settings'),
+          content: const Text(
+            'Are you sure you want to reset all settings to their defaults?',
+          ),
+          cancelAction: () => Navigator.of(context).pop(false),
+          acceptAction: () => Navigator.of(context).pop(true),
+          acceptText: 'Reset',
+        );
+      },
+    );
+
+    if (confirmReset == true) {
+      Provider.of<SettingsProvider>(context, listen: false).resetToDefaults();
+      setState(() {
+        _localSettings =
+            Provider.of<SettingsProvider>(context, listen: false).settings;
+      });
+      // TODO: Add motion_toast here
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBarWidget(
+        title: const Text('Settings'),
+        actionsIcon: Icons.restore,
+        action: () {
+          _resetToDefaults(context);
+        },
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20.0),
         children: [
@@ -162,13 +185,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             text: 'Save Settings',
             icon: Icons.save,
             color: Theme.of(context).colorScheme.tertiary,
-          ),
-          const SizedBox(height: 20), // Add some spacing
-          SaveSettingsButton(
-            onPressed: _resetToDefaults, // Call the local save method
-            text: 'Reset to Default',
-            icon: Icons.restore,
-            color: Theme.of(context).colorScheme.primary,
           ),
         ],
       ),
