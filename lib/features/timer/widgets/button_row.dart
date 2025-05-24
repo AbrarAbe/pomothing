@@ -29,7 +29,7 @@ class ButtonRow extends StatelessWidget {
             child: Icon(
               Icons.restart_alt,
               size: 30,
-              color: Theme.of(context).colorScheme.surface,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),
@@ -45,7 +45,7 @@ class ButtonRow extends StatelessWidget {
             child: Icon(
               Icons.stop,
               size: 25,
-              color: Theme.of(context).colorScheme.surface,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),

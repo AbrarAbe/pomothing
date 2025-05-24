@@ -79,7 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(
             height: 30,
             thickness: 5,
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: Theme.of(context).colorScheme.primary,
           ),
 
           // Short Break Duration Slider
@@ -105,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(
             height: 30,
             thickness: 5,
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: Theme.of(context).colorScheme.primary,
           ),
 
           // Long Break Duration Slider
@@ -131,7 +131,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(
             height: 30,
             thickness: 5,
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: Theme.of(context).colorScheme.primary,
           ),
 
           // Sessions Before Long Break Slider
@@ -153,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Divider(
             height: 30,
             thickness: 5,
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: Theme.of(context).colorScheme.primary,
           ),
 
           const SizedBox(height: 20),

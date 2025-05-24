@@ -39,7 +39,8 @@ class PlayPauseButton extends StatelessWidget {
             Icon(
               getPlayPauseIcon(timerState),
               size: 30,
-              color: Theme.of(context).colorScheme.surface, // Apply icon color
+              color:
+                  Theme.of(context).colorScheme.onPrimary, // Apply icon color
             ),
           ],
         ),

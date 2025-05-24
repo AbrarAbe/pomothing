@@ -69,7 +69,7 @@ ThemeData darkMode = ThemeData(
     onTertiary: catppuccinMochaHighlight,
     primaryContainer: catppuccinMochaAccent,
     error: catppuccinMochaError,
-    onPrimary: catppuccinMochaText,
+    onPrimary: catppuccinLatteText,
     onSurface: catppuccinMochaText,
     onSecondary: catppuccinMochaText,
     onError: catppuccinMochaSurface,

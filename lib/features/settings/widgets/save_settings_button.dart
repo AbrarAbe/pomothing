@@ -30,7 +30,13 @@ class SaveSettingsButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(text, style: TextStyle(fontSize: 18)),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.onPrimary,
+            ),
+          ),
           Icon(icon, size: 20),
         ],
       ),

@@ -30,7 +30,7 @@ class SettingSlider extends StatelessWidget {
             Expanded(
               child: Slider(
                 thumbColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                activeColor: Theme.of(context).colorScheme.primary,
+                activeColor: Theme.of(context).colorScheme.secondary,
                 value: value,
                 min: min,
                 max: max,
