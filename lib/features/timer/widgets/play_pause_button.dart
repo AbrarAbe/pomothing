@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/timer_state.dart';
+import '/../widgets/press_animated_button.dart';
 
 class PlayPauseButton extends StatelessWidget {
   const PlayPauseButton({
@@ -22,24 +23,27 @@ class PlayPauseButton extends StatelessWidget {
       }
     }
 
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        fixedSize: const Size(290, 60),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Theme.of(context).colorScheme.primary, // Button color
-        foregroundColor:
-            Theme.of(context).colorScheme.onPrimary, // Icon/text color
-      ),
+    return PressAnimatedButton(
       onPressed: handlePlayPause,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            getPlayPauseIcon(timerState),
-            size: 30,
-          ),
-        ],
+      child: Container(
+        width: 290,
+        height: 60,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              getPlayPauseIcon(timerState),
+              size: 30,
+              color:
+                  Theme.of(context).colorScheme.onPrimary, // Apply icon color
+            ),
+          ],
+        ),
       ),
     );
   }
