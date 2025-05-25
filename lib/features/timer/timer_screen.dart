@@ -136,59 +136,96 @@ class _TimerScreenState extends State<TimerScreen> {
         actionsIcon: Icons.settings,
       ),
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Spacer(flex: 2), // Use Spacer for flexible spacing
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenWidth = constraints.maxWidth;
+            final isLargeScreen =
+                screenWidth >= 600; // Tablet and PC breakpoint
 
-            Text(
-              "Pomo",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 48,
-                fontWeight: FontWeight.w300,
-                letterSpacing: 20,
-              ),
-            ),
-            Text(
-              "Thing",
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 12,
-              ),
-            ),
+            Widget timerAndButtons;
+            if (isLargeScreen) {
+              timerAndButtons = Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TimeDisplay(remainingTime: timerProvider.remainingTime),
+                  const SizedBox(width: 40), // Space between timer and buttons
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ButtonRow(
+                        handleResetCycle: handleResetCycle,
+                        handleStop: handleStop,
+                      ),
+                      const SizedBox(height: 20),
+                      PlayPauseButton(
+                        timerState: timerProvider.timerState,
+                        handlePlayPause: handlePlayPause,
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            } else {
+              // Mobile layout
+              timerAndButtons = Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TimeDisplay(remainingTime: timerProvider.remainingTime),
+                  const SizedBox(height: 24),
+                  ButtonRow(
+                    handleResetCycle: handleResetCycle,
+                    handleStop: handleStop,
+                  ),
+                  const SizedBox(height: 20),
+                  PlayPauseButton(
+                    timerState: timerProvider.timerState,
+                    handlePlayPause: handlePlayPause,
+                  ),
+                ],
+              );
+            }
 
-            const Spacer(flex: 2),
-            TimeDisplay(remainingTime: timerProvider.remainingTime),
-            if (_sessionEndMessage != null) const SizedBox(height: 16),
-            if (_sessionEndMessage != null)
-              SessionEndMessage(
-                sessionEndMessage: _sessionEndMessage,
-                sessionEndMessageColor: _sessionEndMessageColor,
-              ),
-            const SizedBox(height: 24),
-
-            TimerStatusHeader(
-              currentSessionType: timerProvider.currentSessionType,
-              skipSession: handleSkipSession,
-              currentCycle: timerProvider.currentCycle,
-            ),
-
-            const Spacer(flex: 2),
-            ButtonRow(
-              handleResetCycle: handleResetCycle,
-              handleStop: handleStop,
-            ),
-            const SizedBox(height: 20),
-            PlayPauseButton(
-              timerState: timerProvider.timerState,
-              handlePlayPause: handlePlayPause,
-            ),
-
-            const Spacer(flex: 4),
-          ],
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(flex: 2),
+                Text(
+                  "Pomo",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontSize: 48,
+                    fontWeight: FontWeight.w300,
+                    letterSpacing: 20,
+                  ),
+                ),
+                Text(
+                  "Thing",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 12,
+                  ),
+                ),
+                const Spacer(flex: 2),
+                timerAndButtons,
+                if (_sessionEndMessage != null) const SizedBox(height: 16),
+                if (_sessionEndMessage != null)
+                  SessionEndMessage(
+                    sessionEndMessage: _sessionEndMessage,
+                    sessionEndMessageColor: _sessionEndMessageColor,
+                  ),
+                const SizedBox(height: 24),
+                TimerStatusHeader(
+                  currentSessionType: timerProvider.currentSessionType,
+                  skipSession: handleSkipSession,
+                  currentCycle: timerProvider.currentCycle,
+                ),
+                const Spacer(flex: 4),
+              ],
+            );
+          },
         ),
       ),
     );
