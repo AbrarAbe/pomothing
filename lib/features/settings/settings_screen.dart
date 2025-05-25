@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:delightful_toast/delight_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:pomothing/widgets/appbar.dart';
 import 'package:provider/provider.dart';
 
 import '../../widgets/alert.dart';
+import '../../widgets/toast.dart';
 import 'models/app_settings.dart';
 import 'settings_provider.dart';
 import 'widgets/save_settings_button.dart';
@@ -17,6 +21,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late AppSettings _localSettings;
+  bool _isSaveButtonEnabled = true;
 
   @override
   void initState() {
@@ -30,6 +35,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _saveSettings() {
+    setState(() {
+      _isSaveButtonEnabled = false;
+    });
     // Call the provider's update method with local settings
     Provider.of<SettingsProvider>(context, listen: false).updateSettings(
       workDuration: _localSettings.workDuration,
@@ -37,7 +45,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
       longBreakDuration: _localSettings.longBreakDuration,
       sessionsBeforeLongBreak: _localSettings.sessionsBeforeLongBreak,
     );
-    Navigator.pop(context);
+    Future.delayed(Duration.zero, () {
+      DelightToastBar(
+        autoDismiss: true,
+        snackbarDuration: const Duration(seconds: 2),
+        builder:
+            (context) => Toast(
+              icon: Icons.check_circle_outline,
+              iconColor: Theme.of(context).colorScheme.onPrimary,
+              cardColor: Theme.of(context).colorScheme.tertiary,
+              text: "Your settings have been successfully updated!",
+              textColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+      ).show(context);
+    });
   }
 
   void _resetToDefaults(BuildContext context) async {
@@ -62,7 +83,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _localSettings =
             Provider.of<SettingsProvider>(context, listen: false).settings;
       });
-      // TODO: Add motion_toast here
+      Future.delayed(Duration.zero, () {
+        DelightToastBar(
+          autoDismiss: true,
+          snackbarDuration: const Duration(seconds: 2),
+          builder:
+              (context) => Toast(
+                icon: Icons.settings_backup_restore,
+                iconColor: Theme.of(context).colorScheme.onPrimary,
+                cardColor: Theme.of(context).colorScheme.primaryContainer,
+                text: "All settings have been restored to their defaults.",
+                textColor: Theme.of(context).colorScheme.onPrimary,
+              ),
+        ).show(context);
+      });
     }
   }
 
@@ -90,6 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             divisions: 59,
             onChanged: (value) {
               setState(() {
+                _isSaveButtonEnabled = true;
                 _localSettings = _localSettings.copyWith(
                   workDuration:
                       value.round() * 60, // Convert minutes back to seconds
@@ -116,6 +151,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             divisions: 29,
             onChanged: (value) {
               setState(() {
+                _isSaveButtonEnabled = true;
                 _localSettings = _localSettings.copyWith(
                   shortBreakDuration:
                       value.round() * 60, // Convert minutes back to seconds
@@ -142,6 +178,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             divisions: 55,
             onChanged: (value) {
               setState(() {
+                _isSaveButtonEnabled = true;
                 _localSettings = _localSettings.copyWith(
                   longBreakDuration:
                       value.round() * 60, // Convert minutes back to seconds
@@ -166,6 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             divisions: 9,
             onChanged: (value) {
               setState(() {
+                _isSaveButtonEnabled = true;
                 _localSettings = _localSettings.copyWith(
                   sessionsBeforeLongBreak: value.round(),
                 );
@@ -181,10 +219,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 20),
           SaveSettingsButton(
-            onPressed: _saveSettings, // Call the local save method
+            onPressed: _isSaveButtonEnabled ? _saveSettings : () {},
             text: 'Save Settings',
             icon: Icons.save,
-            color: Theme.of(context).colorScheme.tertiary,
+            color:
+                _isSaveButtonEnabled
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.primary,
           ),
         ],
       ),

@@ -1,13 +1,14 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart'; // Import just_audio
 import 'package:timezone/timezone.dart' as tz; // Import timezone
 
+import '../../services/notification_service.dart'; // Import NotificationService
+import '../settings/models/app_settings.dart';
+import '../settings/settings_provider.dart';
 import 'models/session_type.dart';
 import 'models/timer_state.dart';
-import '../settings/settings_provider.dart';
-import '../settings/models/app_settings.dart';
-import '../../services/notification_service.dart'; // Import NotificationService
 
 class TimerProvider with ChangeNotifier {
   final NotificationService _notificationService =

@@ -1,6 +1,7 @@
+import 'dart:convert'; // Required for jsonEncode/jsonDecode
+
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert'; // Required for jsonEncode/jsonDecode
 
 import 'models/app_settings.dart';
 

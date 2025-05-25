@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_timezone/flutter_timezone.dart';
 
-import 'theme/theme_provider.dart';
+import 'features/settings/settings_provider.dart';
 import 'features/timer/timer_provider.dart';
 import 'features/timer/timer_screen.dart';
-import 'features/settings/settings_provider.dart';
 import 'services/notification_service.dart';
+import 'theme/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

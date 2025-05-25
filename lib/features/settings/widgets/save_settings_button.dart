@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pomothing/widgets/press_animated_button.dart';
+import '../../../widgets/press_animated_button.dart';
 
 // ignore: must_be_immutable
 class SaveSettingsButton extends StatelessWidget {

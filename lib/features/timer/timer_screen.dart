@@ -1,17 +1,18 @@
+import 'package:delightful_toast/delight_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../theme/theme_provider.dart';
-import '../settings/settings_screen.dart';
-import 'timer_provider.dart';
-import 'models/timer_state.dart';
-import 'models/session_type.dart';
 import '../../widgets/appbar.dart';
-import 'widgets/session_end_message.dart';
-import 'widgets/timer_status_header.dart';
-import 'widgets/time_display.dart';
+import '../../widgets/toast.dart';
+import '../settings/settings_screen.dart';
+import 'models/session_type.dart';
+import 'models/timer_state.dart';
+import 'timer_provider.dart';
 import 'widgets/button_row.dart';
 import 'widgets/play_pause_button.dart';
+import 'widgets/time_display.dart';
+import 'widgets/timer_status_header.dart';
 
 class TimerScreen extends StatefulWidget {
   const TimerScreen({super.key});
@@ -23,8 +24,6 @@ class TimerScreen extends StatefulWidget {
 class _TimerScreenState extends State<TimerScreen> {
   TimerState? _previousTimerState;
   SessionType? _previousSessionType;
-  String? _sessionEndMessage;
-  Color? _sessionEndMessageColor;
   bool _buttonPressed = false;
 
   @override
@@ -40,7 +39,7 @@ class _TimerScreenState extends State<TimerScreen> {
         !_buttonPressed;
 
     if (sessionJustEnded) {
-      _updateSessionEndMessage(timerProvider.currentSessionType);
+      _showSessionEndToast(context);
     }
 
     _previousTimerState = timerProvider.timerState;
@@ -49,27 +48,39 @@ class _TimerScreenState extends State<TimerScreen> {
     _buttonPressed = false;
   }
 
-  void _updateSessionEndMessage(SessionType nextSessionType) {
+  void _showSessionEndToast(BuildContext context) {
     String message;
     Color color;
+    IconData icon;
+    SessionType nextSessionType =
+        Provider.of<TimerProvider>(context, listen: false).currentSessionType;
     switch (nextSessionType) {
       case SessionType.work:
         message = 'Break over! Time to Focus!';
-        color = Theme.of(context).colorScheme.error;
+        color = Theme.of(context).colorScheme.onPrimary;
+        icon = Icons.alarm_off;
         break;
       case SessionType.shortBreak:
         message = 'Work session complete! Take a Short Break.';
-        color = Theme.of(context).colorScheme.tertiary;
+        color = Theme.of(context).colorScheme.primary;
+        icon = Icons.free_breakfast;
         break;
       case SessionType.longBreak:
         message = 'Work session complete! Take a Long Break.';
-        color = Theme.of(context).colorScheme.tertiary;
+        color = Theme.of(context).colorScheme.primary;
+        icon = Icons.local_cafe;
+        break;
     }
-
-    setState(() {
-      _sessionEndMessage = message;
-      _sessionEndMessageColor = color;
-    });
+    DelightToastBar(
+      builder:
+          (context) => Toast(
+            icon: icon,
+            iconColor: Theme.of(context).colorScheme.onPrimary,
+            cardColor: color,
+            text: message,
+            textColor: Theme.of(context).colorScheme.onPrimary,
+          ),
+    ).show(context);
   }
 
   @override
@@ -77,16 +88,9 @@ class _TimerScreenState extends State<TimerScreen> {
     final timerProvider = Provider.of<TimerProvider>(context);
     final isRunning = timerProvider.timerState == TimerState.running;
 
-    void dismissSessionEndMessage() {
-      setState(() {
-        _sessionEndMessage = null;
-      });
-    }
-
     void handleStop() {
       _buttonPressed = true;
       timerProvider.resetTimer();
-      dismissSessionEndMessage(); // Also dismiss message on stop
     }
 
     void handlePlayPause() {
@@ -94,20 +98,17 @@ class _TimerScreenState extends State<TimerScreen> {
         timerProvider.pauseTimer();
       } else {
         timerProvider.startTimer();
-        dismissSessionEndMessage();
       }
     }
 
     void handleSkipSession() {
       _buttonPressed = true;
       timerProvider.skipSession();
-      dismissSessionEndMessage();
     }
 
     void handleResetCycle() {
       _buttonPressed = true;
       timerProvider.resetCycle();
-      dismissSessionEndMessage();
     }
 
     void navigateToSettings() {
@@ -172,7 +173,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TimeDisplay(remainingTime: timerProvider.remainingTime),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 20),
                   ButtonRow(
                     handleResetCycle: handleResetCycle,
                     handleStop: handleStop,
@@ -210,12 +211,6 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
                 const Spacer(flex: 2),
                 timerAndButtons,
-                if (_sessionEndMessage != null) const SizedBox(height: 16),
-                if (_sessionEndMessage != null)
-                  SessionEndMessage(
-                    sessionEndMessage: _sessionEndMessage,
-                    sessionEndMessageColor: _sessionEndMessageColor,
-                  ),
                 const SizedBox(height: 24),
                 TimerStatusHeader(
                   currentSessionType: timerProvider.currentSessionType,
