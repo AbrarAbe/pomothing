@@ -24,6 +24,7 @@ class PlayPauseButton extends StatelessWidget {
     }
 
     return PressAnimatedButton(
+      scaleFactor: 0.85,
       onPressed: handlePlayPause,
       child: Container(
         width: 290,

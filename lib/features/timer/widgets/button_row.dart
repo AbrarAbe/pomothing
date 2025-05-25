@@ -18,6 +18,7 @@ class ButtonRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         PressAnimatedButton(
+          scaleFactor: 0.8,
           onPressed: handleResetCycle,
           child: Container(
             width: 100,
@@ -34,6 +35,7 @@ class ButtonRow extends StatelessWidget {
           ),
         ),
         PressAnimatedButton(
+          scaleFactor: 0.8,
           onPressed: handleStop,
           child: Container(
             width: 170,

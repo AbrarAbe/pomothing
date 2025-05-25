@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'press_animated_button.dart';
+
 class AlertWidget extends StatelessWidget {
   final Text title;
   final Widget content;
@@ -22,26 +24,47 @@ class AlertWidget extends StatelessWidget {
       title: title,
       content: content,
       actions: <Widget>[
-        TextButton(
+        PressAnimatedButton(
+          scaleFactor: 0.8,
           onPressed: cancelAction,
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all(
-              Theme.of(context).colorScheme.error,
-            ),
-          ),
           child:
               cancelAction != null
-                  ? const Text('Cancel')
+                  ? Container(
+                    width: 100,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                  )
                   : const SizedBox.shrink(),
         ),
-        TextButton(
+        PressAnimatedButton(
+          scaleFactor: 0.8,
           onPressed: acceptAction,
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all(
-              Theme.of(context).colorScheme.error,
+          child: Container(
+            width: 100,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              acceptText,
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
             ),
           ),
-          child: Text(acceptText),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pomothing/widgets/press_animated_button.dart';
 
 // ignore: must_be_immutable
 class SaveSettingsButton extends StatelessWidget {
@@ -16,29 +17,35 @@ class SaveSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        fixedSize: const Size(290, 60),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: color, // Button color
-        foregroundColor:
-            Theme.of(context).colorScheme.onPrimary, // Icon/text color
-      ),
-      onPressed: onPressed,
-      child: Row(
-        spacing: 5,
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            style: TextStyle(
-              fontSize: 18,
-              color: Theme.of(context).colorScheme.onPrimary,
-            ),
+    return PressAnimatedButton(
+      scaleFactor: 0.85,
+      onPressed: () {},
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          fixedSize: const Size(290, 60),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          Icon(icon, size: 20),
-        ],
+          backgroundColor: color, // Button color
+          foregroundColor:
+              Theme.of(context).colorScheme.onPrimary, // Icon/text color
+        ),
+        onPressed: onPressed,
+        child: Row(
+          spacing: 5,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
+            Icon(icon, size: 20),
+          ],
+        ),
       ),
     );
   }
