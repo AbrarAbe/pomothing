@@ -8,11 +8,13 @@ class SessionInfo extends StatelessWidget {
     required this.currentSessionType,
     required this.skipSession,
     required this.currentCycle,
+    required this.fontSize, // Add fontSize parameter
   });
 
   final SessionType currentSessionType;
   final VoidCallback skipSession;
   final int currentCycle;
+  final double fontSize; // Store fontSize
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class SessionInfo extends StatelessWidget {
                 : "Long Break",
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 18,
+              fontSize: fontSize, // Use the provided fontSize
             ),
           ),
           IconButton(
@@ -47,9 +49,14 @@ class SessionInfo extends StatelessWidget {
 }
 
 class CycleCount extends StatelessWidget {
-  const CycleCount({super.key, required this.currentCycle});
+  const CycleCount({
+    super.key,
+    required this.currentCycle,
+    required this.fontSize, // Add fontSize parameter
+  });
 
   final int currentCycle;
+  final double fontSize; // Store fontSize
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +64,7 @@ class CycleCount extends StatelessWidget {
       "Cycle: $currentCycle",
       style: TextStyle(
         color: Theme.of(context).colorScheme.onSurface.withAlpha(90),
-        fontSize: 16,
+        fontSize: fontSize, // Use the provided fontSize
       ),
     );
   }

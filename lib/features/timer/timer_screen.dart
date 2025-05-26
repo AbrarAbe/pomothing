@@ -143,14 +143,29 @@ class _TimerScreenState extends State<TimerScreen> {
             final isLargeScreen =
                 screenWidth >= 600; // Tablet and PC breakpoint
 
+            // Define font sizes based on screen width
+            final double pomoFontSize = isLargeScreen ? 30 : 48;
+            final double thingFontSize = isLargeScreen ? 15 : 24;
+            final double timeDisplayFontSize = isLargeScreen ? 90 : 80;
+            final double sessionInfoFontSize = isLargeScreen ? 9 : 18;
+            final double cycleCountFontSize = isLargeScreen ? 10 : 16;
+
             Widget timerAndButtons;
             if (isLargeScreen) {
               timerAndButtons = Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  TimeDisplay(remainingTime: timerProvider.remainingTime),
-                  const SizedBox(width: 40), // Space between timer and buttons
+                  const Spacer(flex: 2),
+                  Column(
+                    children: [
+                      TimeDisplay(
+                        remainingTime: timerProvider.remainingTime,
+                        fontSize: timeDisplayFontSize,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 24), // Space between timer and buttons
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -165,6 +180,7 @@ class _TimerScreenState extends State<TimerScreen> {
                       ),
                     ],
                   ),
+                  const Spacer(flex: 2),
                 ],
               );
             } else {
@@ -172,7 +188,10 @@ class _TimerScreenState extends State<TimerScreen> {
               timerAndButtons = Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TimeDisplay(remainingTime: timerProvider.remainingTime),
+                  TimeDisplay(
+                    remainingTime: timerProvider.remainingTime,
+                    fontSize: timeDisplayFontSize, // Pass calculated font size
+                  ),
                   const SizedBox(height: 20),
                   ButtonRow(
                     handleResetCycle: handleResetCycle,
@@ -195,29 +214,35 @@ class _TimerScreenState extends State<TimerScreen> {
                   "Pomo",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.primary,
-                    fontSize: 48,
+                    fontSize: pomoFontSize, // Use calculated font size
                     fontWeight: FontWeight.w300,
-                    letterSpacing: 20,
+                    letterSpacing:
+                        isLargeScreen ? 25 : 20, // Adjust letter spacing
                   ),
                 ),
                 Text(
                   "Thing",
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 24,
+                    fontSize: thingFontSize, // Use calculated font size
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 12,
+                    letterSpacing:
+                        isLargeScreen ? 15 : 12, // Adjust letter spacing
                   ),
                 ),
                 const Spacer(flex: 2),
                 timerAndButtons,
+                const Spacer(flex: 4),
                 const SizedBox(height: 24),
                 TimerStatusHeader(
                   currentSessionType: timerProvider.currentSessionType,
                   skipSession: handleSkipSession,
                   currentCycle: timerProvider.currentCycle,
+                  sessionInfoFontSize:
+                      sessionInfoFontSize, // Pass calculated font size
+                  cycleCountFontSize:
+                      cycleCountFontSize, // Pass calculated font size
                 ),
-                const Spacer(flex: 4),
               ],
             );
           },

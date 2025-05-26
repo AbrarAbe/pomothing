@@ -36,11 +36,16 @@ class NotificationService {
           requestSoundPermission: true,
         );
 
-    // Initialization settings for both platforms
+    // Linux settings (assuming app_icon.png or app_icon.ico exists in linux/flutter/resources)
+    const LinuxInitializationSettings initializationSettingsLinux =
+        LinuxInitializationSettings(defaultActionName: 'Pomothing');
+
+    // Initialization settings for all supported platforms
     final InitializationSettings initializationSettings =
         InitializationSettings(
           android: initializationSettingsAndroid,
           iOS: initializationSettingsDarwin,
+          linux: initializationSettingsLinux, // Add Linux settings
         );
 
     // Initialize the plugin

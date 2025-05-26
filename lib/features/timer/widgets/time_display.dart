@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import '../../../utils/time_utils.dart';
 
 class TimeDisplay extends StatelessWidget {
-  const TimeDisplay({super.key, required this.remainingTime});
+  const TimeDisplay({
+    super.key,
+    required this.remainingTime,
+    // required this.padding,
+    required this.fontSize, // Add fontSize parameter
+  });
 
   final int remainingTime;
+  final double fontSize; // Store fontSize
 
   @override
   Widget build(BuildContext context) {
     final textStyle = TextStyle(
-      fontSize: 80,
+      fontSize: fontSize, // Use the provided fontSize
       fontWeight: FontWeight.bold,
       color: Colors.white70,
     );
@@ -37,7 +43,7 @@ class TimeDisplay extends StatelessWidget {
             child: Text(
               ':',
               style: TextStyle(
-                fontSize: 80,
+                fontSize: fontSize, // Use the provided fontSize
                 fontWeight: FontWeight.bold,
                 color: Colors.white54,
               ),
