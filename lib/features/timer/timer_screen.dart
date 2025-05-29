@@ -232,8 +232,7 @@ class _TimerScreenState extends State<TimerScreen> {
                 ),
                 const Spacer(flex: 2),
                 timerAndButtons,
-                const Spacer(flex: 4),
-                const SizedBox(height: 24),
+                const Spacer(flex: 2),
                 TimerStatusHeader(
                   currentSessionType: timerProvider.currentSessionType,
                   skipSession: handleSkipSession,
@@ -243,6 +242,7 @@ class _TimerScreenState extends State<TimerScreen> {
                   cycleCountFontSize:
                       cycleCountFontSize, // Pass calculated font size
                 ),
+                const Spacer(flex: 3),
               ],
             );
           },
