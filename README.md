@@ -14,8 +14,6 @@ Pomothing is a mobile application designed to help users manage their time effec
 
 ## Upcoming Features
 
--   Customizable work and break durations.
--   Option to set the number of cycles.
 -   Session history and statistics.
--   Theming options.
+-   More theming options.
 -   Integration with task management (potential future feature).
