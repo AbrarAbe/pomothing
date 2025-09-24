@@ -2,7 +2,8 @@
 
 Pomothing is a mobile application designed to help users manage their time effectively using the Pomodoro technique. It provides a simple and intuitive interface to set work and break intervals, receive notifications, and track progress.
 
-<img width="1080" alt="Board" src="https://github.com/user-attachments/assets/353e3ecc-6f69-45c1-bf4a-b16f5bc55794" />
+<!-- <img width="1080" alt="Board" src="https://github.com/user-attachments/assets/353e3ecc-6f69-45c1-bf4a-b16f5bc55794" /> -->
+<img width="1080" alt="Board" src="https://github.com/user-attachments/assets/4be408d3-ecf4-49e0-ba2d-2af6df5e73ad" />
 
 ## Features
 
